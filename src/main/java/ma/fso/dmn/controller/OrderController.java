@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -78,19 +80,22 @@ public class OrderController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
+    public ResponseEntity<?> deleteOrder(@PathVariable String id) {
         try {
             if (!orderService.getOrderById(id).isPresent()) {
                 return ResponseEntity.notFound().build();
             }
             orderService.deleteOrder(id);
-            return ResponseEntity.noContent().build();
+
+            Map<String, String> response = new HashMap<>();
+            response.put("id", id);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Erreur lors de la suppression de la commande (ID : {}) : {}", id, e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
+
 }
